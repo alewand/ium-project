@@ -72,11 +72,14 @@ def predict(
     transformer: ColumnTransformer,
     min_reviews: int = DEFAULT_MIN_REVIEWS,
     rating_weight: float = DEFAULT_MIN_REVIEWS,
-) -> DataFrame[ListingSchema]:
-    listings_to_predict = listings[listings[REVIEWS_AMOUNT_COLUMN] < min_reviews]
+) -> tuple[DataFrame[ListingSchema], list[float]]:
+    listings_copy = listings.copy()
+    listings_to_predict = listings_copy[
+        listings_copy[REVIEWS_AMOUNT_COLUMN] < min_reviews
+    ]
 
     predicted_ratings_series = pd.Series(
-        dtype=float, index=listings.index, name=PREDICTED_RATING_COLUMN
+        dtype=float, index=listings_copy.index, name=PREDICTED_RATING_COLUMN
     )
 
     if len(listings_to_predict) > 0:
@@ -85,12 +88,10 @@ def predict(
             predicted_ratings.to_numpy()
         )
 
-    listings[PREDICTED_RATING_COLUMN] = predicted_ratings_series
-
     final_ratings = []
 
-    for index in listings.index:
-        row = listings.loc[index]
+    for index in listings_copy.index:
+        row = listings_copy.loc[index]
         num_reviews = int(row[REVIEWS_AMOUNT_COLUMN] or 0)
         actual_rating = row[REVIEW_SCORES_RATING_COLUMN]
         actual_rating = None if pd.isna(actual_rating) else float(actual_rating)
@@ -111,6 +112,11 @@ def predict(
 
         final_ratings.append(final_rating)
 
-    listings[REVIEW_SCORES_RATING_COLUMN] = final_ratings
+    sorted_indices = sorted(
+        range(len(final_ratings)), key=lambda i: final_ratings[i], reverse=True
+    )
 
-    return ListingSchema.validate(listings)
+    sorted_listings = listings_copy.iloc[sorted_indices].reset_index(drop=True)
+    sorted_ratings = [final_ratings[i] for i in sorted_indices]
+
+    return ListingSchema.validate(sorted_listings), sorted_ratings

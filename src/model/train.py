@@ -13,9 +13,16 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 
 from constants import (
+    DEFAULT_BOOTSTRAP,
+    DEFAULT_MAX_DEPTH,
+    DEFAULT_MAX_FEATURES,
+    DEFAULT_MAX_SAMPLES,
     DEFAULT_MIN_REVIEWS,
+    DEFAULT_MIN_SAMPLES_LEAF,
+    DEFAULT_MIN_SAMPLES_SPLIT,
     DEFAULT_MODEL_CONFIG_NAME,
     DEFAULT_MODEL_NAME,
+    DEFAULT_N_ESTIMATORS,
     DEFAULT_RANDOM_STATE,
     DEFAULT_TRANSFORMER_NAME,
     MODEL_DIR,
@@ -33,6 +40,13 @@ def train_model(
     rating_weight: float = DEFAULT_MIN_REVIEWS,
     model_name: str = DEFAULT_MODEL_NAME,
     random_state: int = DEFAULT_RANDOM_STATE,
+    n_estimators: int = DEFAULT_N_ESTIMATORS,
+    max_depth: int | None = DEFAULT_MAX_DEPTH,
+    min_samples_split: int = DEFAULT_MIN_SAMPLES_SPLIT,
+    min_samples_leaf: int = DEFAULT_MIN_SAMPLES_LEAF,
+    max_features: str = DEFAULT_MAX_FEATURES,
+    bootstrap: bool = DEFAULT_BOOTSTRAP,
+    max_samples: float | None = DEFAULT_MAX_SAMPLES,
 ) -> tuple[RandomForestRegressor, dict[str, float], pd.DataFrame, pd.Series]:
     filtered_listings = get_listings_without_small_amount_of_reviews(
         listings, min_reviews
@@ -67,13 +81,13 @@ def train_model(
     test_target = test_listings[REVIEW_SCORES_RATING_COLUMN]
 
     model = RandomForestRegressor(
-        n_estimators=100,
-        max_depth=None,
-        min_samples_split=2,
-        min_samples_leaf=1,
-        max_features="sqrt",
-        bootstrap=True,
-        max_samples=None,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        min_samples_leaf=min_samples_leaf,
+        max_features=max_features,
+        bootstrap=bootstrap,
+        max_samples=max_samples,
         random_state=random_state,
         n_jobs=-1,
     )

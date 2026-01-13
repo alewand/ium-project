@@ -1,7 +1,7 @@
 import pandas as pd
 from pandera.typing import DataFrame
 
-from constants import NULLABLE_INT_COLUMNS, REVIEW_SCORES_RATING_COLUMN
+from constants import NULLABLE_INT_COLUMNS
 from schemas import Listing, ListingSchema
 
 
@@ -26,11 +26,6 @@ def listings_to_dataframe(listings: list[Listing]) -> DataFrame[ListingSchema]:
 def dataframe_to_listings(
     dataframe_listings: DataFrame[ListingSchema],
 ) -> list[Listing]:
-    if REVIEW_SCORES_RATING_COLUMN in dataframe_listings.columns:
-        dataframe_listings = dataframe_listings.sort_values(
-            REVIEW_SCORES_RATING_COLUMN, ascending=False
-        )
-
     dataframe_listings = dataframe_listings.copy()
 
     listings = []

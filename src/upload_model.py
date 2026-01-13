@@ -5,15 +5,11 @@ import requests
 from constants import (
     DEFAULT_MODEL_CONFIG_NAME,
     DEFAULT_MODEL_NAME,
+    DEFAULT_SERVICE_URL,
     DEFAULT_TRANSFORMER_NAME,
+    HTTP_OK,
     MODEL_DIR,
 )
-
-HTTP_OK = 200
-
-
-class ModelUploadError(Exception):
-    pass
 
 
 def get_arguments() -> tuple[str, str]:
@@ -26,7 +22,7 @@ def get_arguments() -> tuple[str, str]:
     parser.add_argument(
         "--service-url",
         type=str,
-        default="http://localhost:8000",
+        default=DEFAULT_SERVICE_URL,
     )
 
     arguments = parser.parse_args()
@@ -38,18 +34,18 @@ def upload_model(model_name: str, service_url: str) -> None:
     model_folder = MODEL_DIR / model_name
 
     if not model_folder.exists():
-        raise FileNotFoundError(f"Model folder not found: {model_folder}")
+        raise FileNotFoundError(f"Model folder not found: {model_folder}.")
 
     model_path = model_folder / DEFAULT_MODEL_NAME
     transformer_path = model_folder / DEFAULT_TRANSFORMER_NAME
     config_path = model_folder / DEFAULT_MODEL_CONFIG_NAME
 
     if not model_path.exists():
-        raise FileNotFoundError(f"Model file not found: {model_path}")
+        raise FileNotFoundError(f"Model file not found: {model_path}.")
     if not transformer_path.exists():
-        raise FileNotFoundError(f"Transformer file not found: {transformer_path}")
+        raise FileNotFoundError(f"Transformer file not found: {transformer_path}.")
     if not config_path.exists():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
+        raise FileNotFoundError(f"Config file not found: {config_path}.")
 
     upload_url = f"{service_url}/api/v1/admin/models"
 
@@ -75,7 +71,11 @@ def upload_model(model_name: str, service_url: str) -> None:
             result = response.json()
             print(f"Model uploaded successfully: {result.get('message', '')}.")
         else:
-            print(f"Failed to upload model: {response.status_code} - {response.text}.")
+            try:
+                error_detail = response.json().get("detail", response.text)
+            except Exception:
+                error_detail = response.text
+            print(f"Error occurred: {error_detail}")
 
 
 if __name__ == "__main__":

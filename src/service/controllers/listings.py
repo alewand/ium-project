@@ -17,7 +17,7 @@ def rank_listings(request: RankListingsRequest) -> RankListingsResponse:
         listings_dataframe = listings_to_dataframe(request.listings)
         model, transformer, min_reviews, rating_weight = load_model()
 
-        ranked_listings_dataframe = predict(
+        ranked_listings_dataframe, ratings = predict(
             listings_dataframe,
             model,
             transformer,
@@ -27,6 +27,6 @@ def rank_listings(request: RankListingsRequest) -> RankListingsResponse:
 
         ranked_listings = dataframe_to_listings(ranked_listings_dataframe)
 
-        return RankListingsResponse(listings=ranked_listings)
+        return RankListingsResponse(listings=ranked_listings, ratings=ratings)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

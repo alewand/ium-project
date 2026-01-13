@@ -67,6 +67,13 @@ async def upload_model(
         validate_model_config(config_content)
 
         model_folder = SERVICE_MODEL_DIR / model_name
+
+        if model_folder.exists():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Model {model_name} already exists.",
+            )
+
         model_folder.mkdir(parents=True, exist_ok=True)
 
         model_path = model_folder / DEFAULT_MODEL_NAME

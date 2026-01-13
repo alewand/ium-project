@@ -10,6 +10,7 @@ class RankListingsRequest(BaseModel):
 
 class RankListingsResponse(BaseModel):
     listings: list[Listing]
+    ratings: list[float]
 
 
 class AvailableModelsResponse(BaseModel):
