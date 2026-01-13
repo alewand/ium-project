@@ -1,4 +1,6 @@
+import json
 import re
+from typing import Any
 
 import pandas as pd
 
@@ -24,3 +26,23 @@ def format_boolean(value: object) -> bool | None:
     if formatted in ("f", "false", "0", "no"):
         return False
     return None
+
+
+def format_percentage(percentage_str: Any) -> float | None:
+    if pd.isna(percentage_str) or percentage_str == "":
+        return None
+    formatted = str(percentage_str).replace("%", "").strip()
+    try:
+        return float(formatted)
+    except ValueError:
+        return None
+
+
+def parse_amenities(amenities_str: str) -> list[str]:
+    if pd.isna(amenities_str) or amenities_str == "":
+        return []
+    try:
+        amenities_list = json.loads(amenities_str)
+        return [str(item).strip() for item in amenities_list if item]
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return []

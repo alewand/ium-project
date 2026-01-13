@@ -34,3 +34,6 @@ class Listing(BaseModel):
     availability_60: int | None = Field(None, ge=0, le=60)
     availability_90: int | None = Field(None, ge=0, le=90)
     availability_365: int | None = Field(None, ge=0, le=365)
+    host_acceptance_rate: float | None = Field(None, ge=0, le=100)
+    host_response_rate: float | None = Field(None, ge=0, le=100)
+    amenities: str | None = None

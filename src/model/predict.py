@@ -1,0 +1,112 @@
+import json
+from typing import Any
+
+import joblib
+import pandas as pd
+from pandera.typing import DataFrame
+from sklearn.compose import ColumnTransformer
+
+from constants import (
+    DEFAULT_MIN_REVIEWS,
+    DEFAULT_MODEL_NAME,
+    DEFAULT_TRANSFORMER_NAME,
+    MODEL_DIR,
+    PREDICTED_RATING_COLUMN,
+    REVIEW_SCORES_RATING_COLUMN,
+    REVIEWS_AMOUNT_COLUMN,
+)
+from schemas import ListingSchema
+
+from .preprocessing import prepare_data
+
+
+def load_model(
+    model_name: str = DEFAULT_MODEL_NAME,
+    transformer_name: str = DEFAULT_TRANSFORMER_NAME,
+) -> tuple[Any, ColumnTransformer, int, float]:
+    model_path = MODEL_DIR / model_name
+    transformer_path = MODEL_DIR / transformer_name
+    config_path = MODEL_DIR / f"{model_name.rsplit('.', 1)[0]}.json"
+
+    model = joblib.load(model_path)
+    transformer = joblib.load(transformer_path)
+
+    with config_path.open() as f:
+        config = json.load(f)
+
+    min_reviews = config["min_reviews"]
+    rating_weight = config["rating_weight"]
+
+    return model, transformer, min_reviews, rating_weight
+
+
+def predict_ratings(
+    listings: DataFrame[ListingSchema],
+    model: Any,
+    transformer: ColumnTransformer,
+) -> pd.Series:
+    processed_listings, _ = prepare_data(listings, fit=False, transformer=transformer)
+    predictions = model.predict(processed_listings)
+    return pd.Series(predictions, index=listings.index)
+
+
+def calculate_bayesian_rating(
+    actual_rating: float,
+    predicted_rating: float,
+    num_reviews: int,
+    rating_weight: float,
+) -> float:
+    weight_sum = num_reviews + rating_weight
+    return (num_reviews / weight_sum * actual_rating) + (
+        rating_weight / weight_sum * predicted_rating
+    )
+
+
+def predict(
+    listings: DataFrame[ListingSchema],
+    model: Any,
+    transformer: ColumnTransformer,
+    min_reviews: int = DEFAULT_MIN_REVIEWS,
+    rating_weight: float = DEFAULT_MIN_REVIEWS,
+) -> DataFrame[ListingSchema]:
+    listings_to_predict = listings[listings[REVIEWS_AMOUNT_COLUMN] < min_reviews]
+
+    predicted_ratings_series = pd.Series(
+        dtype=float, index=listings.index, name=PREDICTED_RATING_COLUMN
+    )
+
+    if len(listings_to_predict) > 0:
+        predicted_ratings = predict_ratings(listings_to_predict, model, transformer)
+        predicted_ratings_series.loc[listings_to_predict.index] = (
+            predicted_ratings.to_numpy()
+        )
+
+    listings[PREDICTED_RATING_COLUMN] = predicted_ratings_series
+
+    final_ratings = []
+
+    for index in listings.index:
+        row = listings.loc[index]
+        num_reviews = int(row[REVIEWS_AMOUNT_COLUMN] or 0)
+        actual_rating = row[REVIEW_SCORES_RATING_COLUMN]
+        actual_rating = None if pd.isna(actual_rating) else float(actual_rating)
+        predicted = (
+            float(predicted_ratings_series.loc[index])
+            if not pd.isna(predicted_ratings_series.loc[index])
+            else None
+        )
+
+        if num_reviews == 0 or actual_rating is None:
+            final_rating = predicted if predicted is not None else 0.0
+        elif num_reviews >= min_reviews or predicted is None:
+            final_rating = actual_rating
+        else:
+            final_rating = calculate_bayesian_rating(
+                actual_rating, predicted, num_reviews, rating_weight
+            )
+
+        final_ratings.append(final_rating)
+
+    listings[REVIEW_SCORES_RATING_COLUMN] = final_ratings
+
+    return ListingSchema.validate(listings)
