@@ -51,7 +51,10 @@ def predict_ratings(
 ) -> pd.Series:
     processed_listings, _ = prepare_data(listings, fit=False, transformer=transformer)
     predictions = model.predict(processed_listings)
-    return pd.Series(predictions, index=listings.index)
+    predictions_rounded = pd.Series(
+        [round(float(p), 3) for p in predictions], index=listings.index
+    )
+    return predictions_rounded
 
 
 def calculate_bayesian_rating(

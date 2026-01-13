@@ -1,5 +1,5 @@
+import hashlib
 import json
-import random
 from pathlib import Path
 from typing import Any
 
@@ -15,8 +15,6 @@ from constants import (
     RATING_WEIGHT_KEY,
     SERVICE_MODEL_DIR,
 )
-
-MAX_MODELS = 2
 
 
 def validate_model_config(config_content: bytes) -> dict:
@@ -82,10 +80,16 @@ def get_models() -> list[Path]:
             ):
                 available_models.append(model_folder)
 
-    return available_models
+    return sorted(available_models)
 
 
-def load_model() -> tuple[Any, ColumnTransformer, int, float]:
+def get_model_for_user(user_id: str, available_models: list[Path]) -> Path:
+    hash_value = int(hashlib.md5(user_id.encode("utf-8")).hexdigest(), 16)
+    model_index = hash_value % len(available_models)
+    return available_models[model_index]
+
+
+def load_model(user_id: str) -> tuple[Any, ColumnTransformer, int, float, str]:
     available_models = get_models()
 
     if len(available_models) == 0:
@@ -94,7 +98,7 @@ def load_model() -> tuple[Any, ColumnTransformer, int, float]:
             detail="Models not found. Please upload at least one model first.",
         )
 
-    model_folder = random.choice(available_models)
+    model_folder = get_model_for_user(user_id, available_models)
 
     model_path = model_folder / DEFAULT_MODEL_NAME
     transformer_path = model_folder / DEFAULT_TRANSFORMER_NAME
@@ -106,4 +110,10 @@ def load_model() -> tuple[Any, ColumnTransformer, int, float]:
     with config_path.open() as f:
         config = json.load(f)
 
-    return model, transformer, config[MIN_REVIEWS_KEY], config[RATING_WEIGHT_KEY]
+    return (
+        model,
+        transformer,
+        config[MIN_REVIEWS_KEY],
+        config[RATING_WEIGHT_KEY],
+        model_folder.name,
+    )

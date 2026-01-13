@@ -1,15 +1,16 @@
 import argparse
 
 from constants import (
-    DEFAULT_BOOTSTRAP,
+    DEFAULT_LEARNING_RATE,
     DEFAULT_MAX_DEPTH,
     DEFAULT_MAX_FEATURES,
-    DEFAULT_MAX_SAMPLES,
     DEFAULT_MIN_REVIEWS,
     DEFAULT_MIN_SAMPLES_LEAF,
     DEFAULT_MIN_SAMPLES_SPLIT,
     DEFAULT_MODEL_NAME,
     DEFAULT_N_ESTIMATORS,
+    DEFAULT_RANDOM_STATE,
+    DEFAULT_SUBSAMPLE,
 )
 from data import get_listings
 from model import train_model
@@ -32,7 +33,7 @@ def parse_bool(value: str) -> bool:
 
 
 def get_arguments() -> tuple[
-    str, int, float, int, int | None, int, int, str, bool, float | None
+    str, int, float, int, int | None, int, int, str, float, float, int
 ]:
     parser = argparse.ArgumentParser()
 
@@ -85,15 +86,25 @@ def get_arguments() -> tuple[
     )
 
     parser.add_argument(
-        "--bootstrap",
-        type=parse_bool,
-        default=DEFAULT_BOOTSTRAP,
+        "--learning-rate",
+        type=float,
+        default=DEFAULT_LEARNING_RATE,
     )
 
     parser.add_argument(
-        "--max-samples",
-        type=parse_none_float,
-        default=DEFAULT_MAX_SAMPLES,
+        "--subsample",
+        type=float,
+        default=DEFAULT_SUBSAMPLE,
+    )
+
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=DEFAULT_RANDOM_STATE,
+        help=(
+            f"Random state for data splitting and model training "
+            f"(default: {DEFAULT_RANDOM_STATE})"
+        ),
     )
 
     arguments = parser.parse_args()
@@ -107,8 +118,9 @@ def get_arguments() -> tuple[
         arguments.min_samples_split,
         arguments.min_samples_leaf,
         arguments.max_features,
-        arguments.bootstrap,
-        arguments.max_samples,
+        arguments.learning_rate,
+        arguments.subsample,
+        arguments.random_state,
     )
 
 
@@ -124,8 +136,9 @@ if __name__ == "__main__":
         min_samples_split,
         min_samples_leaf,
         max_features,
-        bootstrap,
-        max_samples,
+        learning_rate,
+        subsample,
+        random_state,
     ) = get_arguments()
 
     print("Training model...")
@@ -139,11 +152,11 @@ if __name__ == "__main__":
         min_samples_split=min_samples_split,
         min_samples_leaf=min_samples_leaf,
         max_features=max_features,
-        bootstrap=bootstrap,
-        max_samples=max_samples,
+        learning_rate=learning_rate,
+        subsample=subsample,
+        random_state=random_state,
     )
 
     print(f"\nModel training {model_name} completed!")
     print(f"Validation MAE: {metrics['mae']:.4f}")
     print(f"Validation RMSE: {metrics['rmse']:.4f}")
-    print(f"Validation R²: {metrics['r2']:.4f}")

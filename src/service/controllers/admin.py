@@ -6,6 +6,7 @@ from constants import (
     DEFAULT_MODEL_CONFIG_NAME,
     DEFAULT_MODEL_NAME,
     DEFAULT_TRANSFORMER_NAME,
+    MAX_MODELS,
     SERVICE_MODEL_DIR,
 )
 from service.schemas.schema import (
@@ -14,8 +15,6 @@ from service.schemas.schema import (
     UploadModelResponse,
 )
 from service.services.model import get_models, validate_model_config
-
-MAX_MODELS = 2
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 

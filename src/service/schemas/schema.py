@@ -11,6 +11,7 @@ class RankListingsRequest(BaseModel):
 class RankListingsResponse(BaseModel):
     listings: list[Listing]
     ratings: list[float]
+    spearman_correlation: float | None
 
 
 class AvailableModelsResponse(BaseModel):

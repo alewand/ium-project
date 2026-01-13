@@ -42,7 +42,4 @@ def delete_model(model_name: str, service_url: str) -> None:
 if __name__ == "__main__":
     model_name, service_url = get_arguments()
     print(f"Deleting model '{model_name}' from {service_url}...")
-    try:
-        delete_model(model_name, service_url)
-    except Exception as e:
-        print(e)
+    delete_model(model_name, service_url)

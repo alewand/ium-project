@@ -12,6 +12,7 @@ dependencies = [
     "python-multipart>=0.0.6",
     "requests>=2.32.0",
     "scikit-learn>=1.8.0",
+    "scipy>=1.14.0",
     "uvicorn>=0.40.0",
 ]
 
@@ -77,6 +78,10 @@ show_error_codes = true
 
 [[tool.mypy.overrides]]
 module = "sklearn.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "scipy.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

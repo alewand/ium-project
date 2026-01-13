@@ -43,7 +43,4 @@ def get_models(service_url: str) -> None:
 
 if __name__ == "__main__":
     service_url = get_arguments()
-    try:
-        get_models(service_url)
-    except Exception as e:
-        print(e)
+    get_models(service_url)
