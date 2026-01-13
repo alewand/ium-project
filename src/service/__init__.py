@@ -1,3 +1,3 @@
-from .service import router
+from .controllers import router
 
 __all__ = ["router"]

@@ -8,10 +8,13 @@ from sklearn.compose import ColumnTransformer
 
 from constants import (
     DEFAULT_MIN_REVIEWS,
+    DEFAULT_MODEL_CONFIG_NAME,
     DEFAULT_MODEL_NAME,
     DEFAULT_TRANSFORMER_NAME,
+    MIN_REVIEWS_KEY,
     MODEL_DIR,
     PREDICTED_RATING_COLUMN,
+    RATING_WEIGHT_KEY,
     REVIEW_SCORES_RATING_COLUMN,
     REVIEWS_AMOUNT_COLUMN,
 )
@@ -22,11 +25,12 @@ from .preprocessing import prepare_data
 
 def load_model(
     model_name: str = DEFAULT_MODEL_NAME,
-    transformer_name: str = DEFAULT_TRANSFORMER_NAME,
 ) -> tuple[Any, ColumnTransformer, int, float]:
-    model_path = MODEL_DIR / model_name
-    transformer_path = MODEL_DIR / transformer_name
-    config_path = MODEL_DIR / f"{model_name.rsplit('.', 1)[0]}.json"
+    model_folder = MODEL_DIR / model_name
+
+    model_path = model_folder / DEFAULT_MODEL_NAME
+    transformer_path = model_folder / DEFAULT_TRANSFORMER_NAME
+    config_path = model_folder / DEFAULT_MODEL_CONFIG_NAME
 
     model = joblib.load(model_path)
     transformer = joblib.load(transformer_path)
@@ -34,8 +38,8 @@ def load_model(
     with config_path.open() as f:
         config = json.load(f)
 
-    min_reviews = config["min_reviews"]
-    rating_weight = config["rating_weight"]
+    min_reviews = config[MIN_REVIEWS_KEY]
+    rating_weight = config[RATING_WEIGHT_KEY]
 
     return model, transformer, min_reviews, rating_weight
 

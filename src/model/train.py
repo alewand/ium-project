@@ -14,6 +14,7 @@ from sklearn.model_selection import train_test_split
 
 from constants import (
     DEFAULT_MIN_REVIEWS,
+    DEFAULT_MODEL_CONFIG_NAME,
     DEFAULT_MODEL_NAME,
     DEFAULT_RANDOM_STATE,
     DEFAULT_TRANSFORMER_NAME,
@@ -31,7 +32,6 @@ def train_model(
     min_reviews: int = DEFAULT_MIN_REVIEWS,
     rating_weight: float = DEFAULT_MIN_REVIEWS,
     model_name: str = DEFAULT_MODEL_NAME,
-    transformer_name: str = DEFAULT_TRANSFORMER_NAME,
     random_state: int = DEFAULT_RANDOM_STATE,
 ) -> tuple[RandomForestRegressor, dict[str, float], pd.DataFrame, pd.Series]:
     filtered_listings = get_listings_without_small_amount_of_reviews(
@@ -87,12 +87,12 @@ def train_model(
         "r2": r2_score(validation_target, validation_predictions),
     }
 
-    model_path = MODEL_DIR / model_name
-    transformer_path = MODEL_DIR / transformer_name
-    config_path = MODEL_DIR / f"{model_name.rsplit('.', 1)[0]}.json"
+    model_folder = MODEL_DIR / model_name
+    model_folder.mkdir(parents=True, exist_ok=True)
 
-    model_path.parent.mkdir(parents=True, exist_ok=True)
-    transformer_path.parent.mkdir(parents=True, exist_ok=True)
+    model_path = model_folder / DEFAULT_MODEL_NAME
+    transformer_path = model_folder / DEFAULT_TRANSFORMER_NAME
+    config_path = model_folder / DEFAULT_MODEL_CONFIG_NAME
 
     joblib.dump(model, model_path)
     joblib.dump(transformer, transformer_path)

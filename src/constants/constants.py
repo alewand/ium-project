@@ -1,16 +1,21 @@
 from pathlib import Path
 
-_MODEL_DIR = Path(__file__).parent.parent / "model" / "models"
-_DATASET_DIR = Path(__file__).parent.parent / "data" / "datasets"
+DATASET_DIR = Path(__file__).parent.parent / "data" / "datasets"
+MODEL_DIR = Path(__file__).parent.parent / "model" / "models"
+SERVICE_MODEL_DIR = Path(__file__).parent.parent / "service" / "models"
 
-MODEL_DIR = _MODEL_DIR
-DEFAULT_MODEL_NAME = "model.pkl"
-DEFAULT_TRANSFORMER_NAME = "transformer.pkl"
-
-DATASET_DIR = _DATASET_DIR
 DEFAULT_DATASET_NAME = "listings.csv"
 
-SERVICE_CONFIG_PATH = Path("service_config.json")
+DEFAULT_MODEL_NAME = "model.pkl"
+DEFAULT_TRANSFORMER_NAME = "transformer.pkl"
+DEFAULT_MODEL_CONFIG_NAME = "model_config.json"
+
+DEFAULT_MIN_REVIEWS = 5
+DEFAULT_RANDOM_STATE = 42
+IMPUTER_STRATEGY = "mean"
+
+MIN_REVIEWS_KEY = "min_reviews"
+RATING_WEIGHT_KEY = "rating_weight"
 
 PRICE_COLUMN = "price"
 REVIEWS_AMOUNT_COLUMN = "number_of_reviews"
@@ -18,13 +23,25 @@ REVIEW_SCORES_RATING_COLUMN = "review_scores_rating"
 PREDICTED_RATING_COLUMN = "predicted_rating"
 FINAL_RATING_COLUMN = "final_rating"
 AMENITIES_COLUMN = "amenities"
-DEFAULT_MIN_REVIEWS = 5
-
-DEFAULT_RANDOM_STATE = 42
 
 BOOLEAN_COLUMNS = ["host_is_superhost", "host_identity_verified"]
 
 PERCENTAGE_COLUMNS = ["host_acceptance_rate", "host_response_rate"]
+
+NULLABLE_INT_COLUMNS = [
+    "accommodates",
+    "minimum_nights",
+    "maximum_nights",
+    "minimum_minimum_nights",
+    "maximum_minimum_nights",
+    "minimum_maximum_nights",
+    "maximum_maximum_nights",
+    REVIEWS_AMOUNT_COLUMN,
+    "availability_30",
+    "availability_60",
+    "availability_90",
+    "availability_365",
+]
 
 NUMERIC_COLUMNS = [
     "price",
@@ -54,8 +71,6 @@ CATEGORICAL_COLUMNS = [
     "neighbourhood_group_cleansed",
     "has_availability",
 ]
-
-IMPUTER_STRATEGY = "mean"
 
 COLUMNS_TO_DROP = [
     "listing_url",

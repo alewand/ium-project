@@ -9,6 +9,8 @@ dependencies = [
     "joblib>=1.4.0",
     "pandas>=2.3.3",
     "pandera>=0.28.1",
+    "python-multipart>=0.0.6",
+    "requests>=2.32.0",
     "scikit-learn>=1.8.0",
     "uvicorn>=0.40.0",
 ]
@@ -47,7 +49,7 @@ select = [
     "NPY",
     "RUF",
 ]
-ignore = ["TRY003", "PLR0913"]
+ignore = ["TRY003", "PLR0913", "TRY301"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -79,4 +81,8 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "joblib"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "requests"
 ignore_missing_imports = true

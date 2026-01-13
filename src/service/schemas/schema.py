@@ -12,10 +12,13 @@ class RankListingsResponse(BaseModel):
     listings: list[Listing]
 
 
-class ConfigUpdateRequest(BaseModel):
-    model_name: str
-    transformer_name: str
+class AvailableModelsResponse(BaseModel):
+    models: list[str]
 
 
-class ConfigUpdateResponse(BaseModel):
+class UploadModelResponse(BaseModel):
+    message: str
+
+
+class DeleteModelResponse(BaseModel):
     message: str
