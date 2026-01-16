@@ -14,6 +14,7 @@ from service.schemas.schema import (
     RankListingsResponse,
 )
 from service.services.listings import dataframe_to_listings, listings_to_dataframe
+from service.services.logging import log_prediction
 from service.services.model import load_model
 
 logger = logging.getLogger(__name__)
@@ -67,6 +68,13 @@ def rank_listings(request: RankListingsRequest) -> RankListingsResponse:
             spearman_correlation, _ = spearmanr(valid_original, valid_final)
 
         ranked_listings = dataframe_to_listings(ranked_listings_dataframe)
+
+        log_prediction(
+            user_id=request.user_id,
+            model_name=model_name,
+            input_listings=request.listings,
+            predictions=final_ratings_original_order,
+        )
 
         return RankListingsResponse(
             ratings=sorted_ratings,

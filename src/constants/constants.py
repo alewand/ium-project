@@ -3,6 +3,7 @@ from pathlib import Path
 DATASET_DIR = Path(__file__).parent.parent / "data" / "datasets"
 MODEL_DIR = Path(__file__).parent.parent / "model" / "models"
 SERVICE_MODEL_DIR = Path(__file__).parent.parent / "service" / "models"
+PREDICTION_LOG_DIR = Path(__file__).parent.parent / "service" / "logs"
 
 DEFAULT_DATASET_NAME = "listings.csv"
 
