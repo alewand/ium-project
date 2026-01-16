@@ -252,7 +252,6 @@ def print_error_metrics(
     print("=" * 80)
 
     for model_name, (predictions, actuals) in data_by_model.items():
-        # Upewniamy się, że listy mają taką samą długość
         if len(predictions) != len(actuals):
             print(
                 f"\nModel: {model_name} - BŁĄD: niezgodna liczba predykcji ({len(predictions)}) "
