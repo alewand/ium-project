@@ -23,15 +23,7 @@ def get_random_listings_from_csv(
     all_listings: list[Listing], num_listings: int
 ) -> list[Listing]:
     selected_listings = random.sample(all_listings, min(num_listings, len(all_listings)))
-
-    modified_listings = []
-    for listing in selected_listings:
-        listing_dict = listing.model_dump()
-        listing_dict["number_of_reviews"] = random.randint(0, 500)
-        modified_listing = Listing.model_validate(listing_dict)
-        modified_listings.append(modified_listing)
-
-    return modified_listings
+    return selected_listings
 
 
 def send_request(
