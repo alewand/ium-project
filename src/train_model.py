@@ -101,10 +101,6 @@ def get_arguments() -> tuple[
         "--random-state",
         type=int,
         default=DEFAULT_RANDOM_STATE,
-        help=(
-            f"Random state for data splitting and model training "
-            f"(default: {DEFAULT_RANDOM_STATE})"
-        ),
     )
 
     arguments = parser.parse_args()
