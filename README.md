@@ -1,7 +1,7 @@
 # Projekt na IUM (Inżynieria uczenia maszynowego), Politechnika Warszawska
 ### By Bartosz Żelazko & Amadeusz Lewandowski
 
-Celem projektu jest opracowanie modelu uczenia maszynowego oraz mikro serwisie do lepszego pozycjonowania nowych ofert z małą liczbą ocen w serwisie typu Airbnb.
+Celem projektu jest opracowanie modelu uczenia maszynowego oraz mikro serwisu do lepszego pozycjonowania nowych ofert z małą liczbą ocen w serwisie typu Airbnb.
 
 Szczegóły i dokumentację można znaleźć [w tym miejscu](documentation.pdf).
 
